@@ -31,6 +31,7 @@ data
 ### **1.2 Adicionar variables a un conjunto de datos**
 
 ## Generar conjuntos de datos para haer la aplicación:
+set.seed(0117)
 db_1 = tibble(id = 102:105 , income = runif(4,1000,2000) %>% round())
 db_2 = tibble(id = 103:106 , age = runif(4,30,40)  %>% round())
 
@@ -38,7 +39,7 @@ db_2 = tibble(id = 103:106 , age = runif(4,30,40)  %>% round())
 db_1 %>% head(n = 5)
 db_2 %>% head(n = 4)
 
-## Combinar el conjunto de datos:
+## Combinar el conjunto de datos, en este caso no aplica:
 db = bind_cols(db_1,db_2)
 db
 
@@ -65,6 +66,8 @@ df = right_join(x=data_1,y=data_2,by=c("Casa","Visita"))
 df
 
 #### **Ejemplo: inner_join()**
+## inner_join es la más útil para ubicar observaciones que estén en...
+##... intersección para ambas bases de datos
 df = inner_join(x=data_1,y=data_2,by=c("Casa","Visita"))
 df
 
@@ -104,17 +107,27 @@ fish_encounters %>% pivot_wider(names_from = station, values_from = seen ) %>% h
 
 us_rent_income %>% pivot_wider(names_from = variable, values_from = c(estimate, moe)) %>% head(3)                        
 
-fish_wide = fish_encounters %>% pivot_wider(names_from = station, values_from = seen ) %>% head(3)
-
+fish_wide = fish_encounters %>% pivot_wider(names_from = station, values_from = seen )
+fish_wide %>%head(3)
 ### **2.2 pivot_long**
 
 ## Retorno `fish_wide` al formato original:
 
 fish_wide %>% pivot_longer(cols = c(2:12), names_to = "seen")
+fish_wide %>% pivot_longer(cols = c(Release:MAW), names_to = "station_seen")
 
 ## **[3.] Aplicación: GEIH**
+## import data
+cg =import("input/Enero - Cabecera - Caracteristicas generales (Personas).csv") %>%
+   clean_names()
+ocu =import("input/Enero - Cabecera - Ocupados.csv") %>%
+   clean_names()
 
+##
+cg$duplicado = duplicated(cg$directorio)
+view(cg)
+table(cg$duplicado)
+a=distinct_all(cg)
+b=distinct_all(select(.data=cg, directorio, secuencia_p, orden))
 
-
-
-                      
+cg_ocu = left_join(x=cg, y=ocu, by=c("directorio", "secuencia_p", "orden"))                      
